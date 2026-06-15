@@ -1,0 +1,48 @@
+import numpy as np
+
+# 目标函数
+def f2(x):
+    return 4*x[0]**2 + x[1]**2 - 8*x[0] - 4*x[1]
+
+# 梯度
+def grad_f2(x):
+    return np.array([8*x[0] - 8, 2*x[1] - 4])
+
+# Hessian矩阵
+def hess_f2(x):
+    return np.array([[8, 0], [0, 2]])
+
+# 牛顿法
+def newton_method(f, grad_f, hess_f, x0, eps=1e-5, max_iter=100):
+    x = np.array(x0, dtype=float)
+    for k in range(max_iter):
+        g = grad_f(x)
+        if np.linalg.norm(g) < eps:
+            break
+        H = hess_f(x)
+        d = np.linalg.solve(H, -g)
+        x += d
+    return x, f(x), k+1
+
+# 阻尼牛顿法（带精确线搜索）
+def damped_newton(f, grad_f, hess_f, x0, eps=1e-5, max_iter=100):
+    x = np.array(x0, dtype=float)
+    for k in range(max_iter):
+        g = grad_f(x)
+        if np.linalg.norm(g) < eps:
+            break
+        H = hess_f(x)
+        d = np.linalg.solve(H, -g)
+        # 二次函数最优步长公式
+        alpha = -(g @ d) / (d @ H @ d)
+        x += alpha * d
+    return x, f(x), k+1
+
+# 求解
+x0 = [0, 0]
+x_n, f_n, it_n = newton_method(f2, grad_f2, hess_f2, x0)
+x_dn, f_dn, it_dn = damped_newton(f2, grad_f2, hess_f2, x0)
+
+print("===== 题目2 结果 =====")
+print(f"牛顿法: x*={x_n}, f(x*)={f_n:.4f}, 迭代{it_n}次")
+print(f"阻尼牛顿法: x*={x_dn}, f(x*)={f_dn:.4f}, 迭代{it_dn}次")
