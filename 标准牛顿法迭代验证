@@ -1,0 +1,25 @@
+def f6(x):
+    return 4*x[0]**2 + x[1]**2 - x[0]**2 * x[1]
+
+def grad_f6(x):
+    return np.array([8*x[0] - 2*x[0]*x[1], 2*x[1] - x[0]**2])
+
+def hess_f6(x):
+    return np.array([[8 - 2*x[1], -2*x[0]], [-2*x[0], 2]])
+
+def newton_iterations(f, grad_f, hess_f, x0, steps=3):
+    x = np.array(x0, dtype=float)
+    print(f"初始点: x0={x}, f(x0)={f(x):.4f}")
+    for k in range(1, steps+1):
+        g = grad_f(x)
+        H = hess_f(x)
+        d = np.linalg.solve(H, -g)
+        x += d
+        print(f"第{k}次迭代: x{k}={x}, f(x{k})={f(x):.4f}")
+    return x
+
+print("\n===== 题目6 结果 =====")
+print("--- 初始点x^a=(1,1)^T ---")
+x_a = newton_iterations(f6, grad_f6, hess_f6, [1,1])
+print("\n--- 初始点x^b=(3,4)^T ---")
+x_b = newton_iterations(f6, grad_f6, hess_f6, [3,4])
