@@ -1,0 +1,25 @@
+def f8(x):
+    return x[0]**2 + 4*x[1]**2 - 4*x[0] - 8*x[1]
+
+def grad_f8(x):
+    return np.array([2*x[0]-4, 8*x[1]-8])
+
+def steepest_descent_track(f, grad_f, x0, eps=1e-6, max_iter=100):
+    x = np.array(x0, dtype=float)
+    history = [x.copy()]
+    for k in range(max_iter):
+        g = grad_f(x)
+        if np.linalg.norm(g) < eps:
+            break
+        # 最优步长
+        alpha = (g @ g) / (g @ np.array([[2,0],[0,8]]) @ g)
+        x -= alpha * g
+        history.append(x.copy())
+    return np.array(history), f(x)
+
+print("\n===== 题目8 结果 =====")
+history, f_opt = steepest_descent_track(f8, grad_f8, [0,0], max_iter=10)
+print("梯度法前10次迭代轨迹：")
+for i, x in enumerate(history):
+    print(f"x{i}={x}")
+print(f"最终f(x)={f_opt:.4f}")
