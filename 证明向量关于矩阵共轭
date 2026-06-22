@@ -1,0 +1,19 @@
+import numpy as np
+
+# 1. 定义矩阵和向量
+A = np.array([[2, 3],
+              [3, 5]])
+alpha1 = np.array([[1],
+                   [0]])
+alpha2 = np.array([[3],
+                   [-2]])
+
+# 2. 计算共轭内积
+conj_product = alpha1.T @ A @ alpha2
+print("α₁ᵀAα₂ =", conj_product[0, 0])
+
+# 3. 判断是否共轭
+if abs(conj_product[0, 0]) < 1e-10:
+    print("结论：α₁ 和 α₂ 关于 A 共轭 ✅")
+else:
+    print("结论：α₁ 和 α₂ 不关于 A 共轭 ❌")
