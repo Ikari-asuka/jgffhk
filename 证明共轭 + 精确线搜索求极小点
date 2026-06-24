@@ -1,0 +1,42 @@
+import numpy as np
+
+# 定义 H, b, 初始点、方向
+H = np.array([[4, 2],
+              [2, 4]])
+b = np.array([[3],
+              [3]])
+d0 = np.array([[1],
+               [0]])
+d1 = np.array([[-1],
+               [2]])
+x0 = np.array([[0],
+               [0]])
+
+# --- (1) 证明共轭 ---
+conj_d = d0.T @ H @ d1
+print("d₀ᵀHd₁ =", conj_d[0, 0])
+if abs(conj_d[0, 0]) < 1e-10:
+    print("结论：d₀ 和 d₁ 关于 H 共轭 ✅")
+else:
+    print("结论：d₀ 和 d₁ 不关于 H 共轭 ❌")
+
+# --- (2) 精确线搜索求极小点 ---
+def exact_line_search(xk, dk, H, b):
+    grad = H @ xk + b
+    alpha = -(grad.T @ dk) / (dk.T @ H @ dk)
+    alpha = float(alpha)  # 转为标量
+    xk1 = xk + alpha * dk
+    return xk1, alpha
+
+# 第一次迭代：x0 -> x1，方向 d0
+x1, alpha0 = exact_line_search(x0, d0, H, b)
+print(f"\n第1次迭代：x1 = {x1.flatten()}, α0 = {alpha0}")
+
+# 第二次迭代：x1 -> x2，方向 d1
+x2, alpha1 = exact_line_search(x1, d1, H, b)
+print(f"第2次迭代：x2 = {x2.flatten()}, α1 = {alpha1}")
+
+# 验证梯度是否为0（理论上应是极小点）
+grad_final = H @ x2 + b
+print(f"\n最终点梯度：∇f(x2) = {grad_final.flatten()}")
+print("理论极小点（解方程 Hx = -b）：", np.linalg.solve(H, -b).flatten())
