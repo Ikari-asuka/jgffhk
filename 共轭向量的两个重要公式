@@ -1,0 +1,36 @@
+import numpy as np
+
+# 示例：2阶对称正定矩阵
+H = np.array([[4, 2],
+              [2, 4]])
+# 取一组共轭向量（比如第3题的d0,d1）
+d_list = [
+    np.array([[1], [0]]),
+    np.array([[-1], [2]])
+]
+
+# --- (1) 验证 x 的展开式 ---
+x = np.array([[3], [5]])  # 任意向量
+x_recon = np.zeros_like(x)
+for d in d_list:
+    alpha = (d.T @ H @ x) / (d.T @ H @ d)
+    x_recon += alpha * d
+
+print("原向量 x =", x.flatten())
+print("重构的 x =", x_recon.flatten())
+if np.allclose(x, x_recon):
+    print("验证(1)：x 的展开式成立 ✅")
+else:
+    print("验证(1)失败 ❌")
+
+# --- (2) 验证 H⁻¹ 的展开式 ---
+Hinv = np.zeros_like(H, dtype=float)
+for d in d_list:
+    denom = d.T @ H @ d
+    Hinv += (d @ d.T) / denom
+print("\n理论 H⁻¹ = \n", np.linalg.inv(H))
+print("重构的 H⁻¹ = \n", Hinv)
+if np.allclose(np.linalg.inv(H), Hinv):
+    print("验证(2)：H⁻¹ 的展开式成立 ✅")
+else:
+    print("验证(2)失败 ❌")
