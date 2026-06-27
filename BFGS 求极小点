@@ -1,0 +1,51 @@
+import numpy as np
+from numpy.linalg import norm, solve
+
+def fun(x):
+    x1, x2 = x
+    return x1**2 + x1*x2 + x2**2
+
+def gfun(x):
+    x1, x2 = x
+    g1 = 2*x1 + x2
+    g2 = x1 + 2*x2
+    return np.array([g1, g2])
+
+def bfgs(x0):
+    maxk = 500
+    rho = 0.55
+    sigma = 0.4
+    epsilon = 1e-5
+    k = 0
+    n = len(x0)
+    Bk = np.eye(n)
+    
+    while k < maxk:
+        gk = gfun(x0)
+        if norm(gk) < epsilon:
+            break
+        dk = solve(-Bk, gk)
+        m = 0
+        mk = 0
+        # Armijo搜索
+        while m < 20:
+            newf = fun(x0 + rho**m * dk)
+            oldf = fun(x0)
+            if newf < oldf + sigma * rho**m * gk.T @ dk:
+                mk = m
+                break
+            m += 1
+        x = x0 + rho**mk * dk
+        sk = x - x0
+        yk = gfun(x) - gk
+        if yk.T @ sk > 0:
+            Bk = Bk - (Bk @ sk @ sk.T @ Bk) / (sk.T @ Bk @ sk) + (yk @ yk.T) / (yk.T @ sk)
+        k += 1
+        x0 = x
+    return x0, fun(x0), k
+
+x0 = np.array([3, 2])
+x_opt, f_opt, iter_num = bfgs(x0)
+print("极小点：", x_opt)
+print("极小值：", f_opt)
+print("迭代次数：", iter_num)
