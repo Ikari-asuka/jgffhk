@@ -1,0 +1,11 @@
+import numpy as np
+
+# 定义向量与矩阵
+alpha1 = np.array([[1], [0]])
+alpha2 = np.array([[3], [-2]])
+A = np.array([[2, 3],
+              [3, 5]])
+
+# 计算共轭乘积
+res = alpha1.T @ A @ alpha2
+print(f"α1^T A α2 = {res.item()}")
