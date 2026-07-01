@@ -1,0 +1,27 @@
+import numpy as np
+
+# 3(1) 验证共轭
+H = np.array([[4, 2],
+              [2, 4]])
+d0 = np.array([[1], [0]])
+d1 = np.array([[-1], [2]])
+conj = d0.T @ H @ d1
+print(f"d0^T H d1 = {conj.item()}")
+
+# 3(2) 精确线搜索
+b = np.array([[3], [3]])
+x0 = np.array([[0], [0]])
+
+# 第一步：沿d0搜索
+g0 = H @ x0 + b  # 梯度
+alpha0 = -(g0.T @ d0) / (d0.T @ H @ d0)
+x1 = x0 + alpha0 * d0
+
+# 第二步：沿d1搜索
+g1 = H @ x1 + b
+alpha1 = -(g1.T @ d1) / (d1.T @ H @ d1)
+x2 = x1 + alpha1 * d1
+
+print(f"\n极小点 x* = \n{x2}")
+f_min = 0.5 * x2.T @ H @ x2 + b.T @ x2
+print(f"极小值 f(x*) = {f_min.item():.4f}")
