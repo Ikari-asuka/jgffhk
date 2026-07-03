@@ -1,0 +1,13 @@
+# 生成随机对称正定矩阵
+np.random.seed(0)
+A = np.random.rand(2, 2)
+H = A.T @ A  # 保证对称正定
+# 求解特征值、特征向量
+eig_vals, eig_vecs = np.linalg.eig(H)
+u1, u2 = eig_vecs[:, [0]], eig_vecs[:, [1]]
+res = u1.T @ H @ u2
+
+print("===== 第5题验证 =====")
+print(f"特征值λ1={eig_vals[0]:.4f}, λ2={eig_vals[1]:.4f}")
+print(f"u1^T H u2 = {res.item():.10f}")
+print("结论：不同特征值的特征向量关于H共轭\n")
