@@ -1,0 +1,26 @@
+import numpy as np
+
+# 7题验证
+H = np.array([[4, 2], [2, 4]])
+d0 = np.array([[1], [0]])
+d1 = np.array([[-1], [2]])
+D = [d0, d1]
+
+# (1) 验证向量展开
+x_test = np.array([[2], [3]])
+x_approx = np.zeros_like(x_test)
+for d in D:
+    num = d.T @ H @ x_test
+    den = d.T @ H @ d
+    x_approx += (num / den) * d
+print("(1) 原向量 x:\n", x_test)
+print("展开近似 x_approx:\n", x_approx)
+
+# (2) 验证矩阵逆公式
+H_inv_approx = np.zeros_like(H)
+for d in D:
+    den = d.T @ H @ d
+    H_inv_approx += (d @ d.T) / den
+H_inv_true = np.linalg.inv(H)
+print("\n(2) H逆 理论值:\n", H_inv_true)
+print("H逆 共轭展开近似:\n", H_inv_approx)
