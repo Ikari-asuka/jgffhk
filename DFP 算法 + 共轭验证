@@ -1,0 +1,56 @@
+import numpy as np
+from numpy.linalg import norm, inv
+
+def fun(x):
+    x1, x2 = x
+    return x1**2 - x1*x2 + x2**2 + 2*x1 - 4*x2
+
+def gfun(x):
+    x1, x2 = x
+    g1 = 2*x1 - x2 + 2
+    g2 = -x1 + 2*x2 - 4
+    return np.array([g1, g2])
+
+def dfp(x0):
+    maxk = 10000
+    rho = 0.55
+    sigma = 0.4
+    epsilon = 1e-5
+    k = 0
+    n = len(x0)
+    Hk = inv(np.eye(n))
+    dirs = []  # 保存下降方向
+    
+    while k < maxk:
+        gk = gfun(x0)
+        if norm(gk) < epsilon:
+            break
+        dk = -Hk @ gk
+        dirs.append(dk)
+        # Armijo
+        m = 0
+        while m < 20:
+            if fun(x0 + rho**m * dk) < fun(x0) + sigma * rho**m * gk.T @ dk:
+                mk = m
+                break
+            m += 1
+        x = x0 + rho**mk * dk
+        sk = x - x0
+        yk = gfun(x) - gk
+        if yk.T @ sk > 0:
+            Hk = Hk - (Hk @ yk @ yk.T @ Hk) / (yk.T @ Hk @ yk) + (sk @ sk.T) / (yk.T @ yk)
+        k += 1
+        x0 = x
+    return x0, fun(x0), k, dirs
+
+# 运行
+x0 = np.array([2, 2])
+x_opt, f_opt, iters, dirs = dfp(x0)
+print("最优解：", x_opt)
+print("最优值：", f_opt)
+
+# 共轭验证
+H = np.array([[2, -1], [-1, 2]])
+if len(dirs)>=2:
+    d1, d2 = dirs[0], dirs[1]
+    print("d1^T H d2 =", d1.T @ H @ d2)
